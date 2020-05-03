@@ -1,4 +1,4 @@
-# Map Science (WIP)
+# Numbers Master (WIP)
 
 Is the Clojurescript version with [Helix](https://github.com/Lokeh/helix), Pigeon and React Range of https://github.com/f1729/science-timeline.
 
@@ -22,8 +22,6 @@ Navigate to http://localhost:8888
 ## Libraries
 
 - [helix](https://github.com/Lokeh/helix)
-- [react-range](https://github.com/tajo/react-range)
-- [pigeon-maps](https://github.com/mariusandra/pigeon-maps)
 
 
 ## Implementation
@@ -32,7 +30,7 @@ My goal for this project is cover some topics of modern web development in React
 
 - Import packages ✅
 - Deal with interop when packages have a lot of that ✅
-- Use styled-components 🚧
+- Use styled-components ✅
 - Use modularization 
 
 Note: If you think that there are any topic that I should include, please open a issue.
