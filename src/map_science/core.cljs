@@ -43,42 +43,53 @@
          number)))
 
 
-(defnc ButtonsPanel 
+(defnc NumbersButtonsPanel 
   [{:keys [set-current]}]
   (map #(StyleNumberButton 
           ($ NumberButton {:number (inc %1) :set-current set-current})) 
        (take 9 (range))))
+
+(defnc ScreenPanel
+  [{:keys [digits current]}]
+  (let [asteriscs (- digits (count current))]
+    (d/div
+      (d/p current)
+      (d/p (str current (clojure.string/join (repeat asteriscs "*")))))))
 
 
 (defmulti panel-actions (fn [_ action] (first action)))
 
 (defmethod panel-actions
   ::init [state _]
-  (or state {:level 1 
-             :cypher "" 
-             :status "waiting" 
+  (or state {:level 5 
+             :cypher "12345" 
+             :status "playing" 
              :current "" 
              :blow "" 
              :hit ""}))
 
 (defmethod panel-actions
   ::set-current [state [_ y]]
-  (merge state {:current (str (:current state) y)}))
+  (let [current (:current state)
+        status (:status state)
+        max-size (:level state)]
+    (if (and (= status "playing") (> max-size (count current)))
+      (merge state {:current (str current y)})
+      state)))
 
-(defmethod panel-action
+(defmethod panel-actions
   ::set-status [state [_ y]]
   (merge state {:status y}))
 
-(defmethod panel-action
+(defmethod panel-actions
   ::set-level [state [_ y]]
   (merge state {:level y}))
 
-(defmethod panel-acton
+(defmethod panel-actions
   ::set-blow [state [_ y]]
   (merge state {:blow y})) 
 
-
-(defmethod panel-acton
+(defmethod panel-actions
   ::set-hit [state [_ y]]
   (merge state {:hit y})) 
 
@@ -88,8 +99,11 @@
         set-current #(dispatch [::set-current %])
         set-status #(dispatch [::set-status %])
         set-blow #(dispatch [::set-blow %])
-        set-hit #(dispatch [::set-hit %])]
-    ($ ButtonsPanel {:set-current set-current})))
+        set-hit #(dispatch [::set-hit %])
+        digits (count (:cypher state))]
+    (d/div 
+      ($ ScreenPanel {:current (:current state) :digits digits})
+      ($ NumbersButtonsPanel {:set-current set-current :digits digits}))))
 
 
 (defnc App []
