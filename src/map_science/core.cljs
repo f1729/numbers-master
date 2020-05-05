@@ -4,6 +4,7 @@
             [helix.core :refer [$ <> defnc]]
             [helix.dom :as d]
             [helix.hooks :as hooks]
+            [cljs-styled-components.core :refer [clj-props] :refer-macros [defstyled defkeyframes]]
             ;; How import libraries?
             ;; Import a NPM library is really easy,
             ;; just want to type the name and use :as
@@ -12,7 +13,6 @@
             ;; ["some-library" :as ains]
             ;; For it, in case :as throw an error, use (js/console.log ains)
             ;; to see what kind of exportation have.
-            [cljs-styled-components.core :refer [clj-props] :refer-macros [defstyled defkeyframes]]
             ["react-dom" :as rdom]
             ["react-range" :as rrange :refer [getTrackBackground Range]]
             ["react-router-dom" :as rr]))
@@ -23,13 +23,29 @@
 (defstyled StyleNumberButton 
   :div 
   {:display "flex"
+   :flex-grow "1"
+   :flex "0 1 30%"
+   :align-items "center"
+   :margin "3px"
    :justify-content "center"
    :vertical-align "middle"
    :color "white"
    :border "1px solid black"
+   :border-radius "10px"
    :background "gray"
-   :height "50px"
+   :height "100px"
    :width "50px"})
+
+(defstyled StyledContainer
+  :div 
+  {:width "100%"
+   :height "100%"
+   :text-align "center"})
+
+(defnc aoa 
+  [{:keys [active number]}]
+  (StyleNumberButton 
+    (d/p {:style {:color (if active "red" "blue")}} number)))
 
 (defnc NumberButton 
   [{:keys [number set-current]}]
@@ -38,22 +54,27 @@
     (set-current number))
 
   (let [[active set-active] (hooks/use-state false)]
-    (d/p {:on-click (fn [] (set-active (not active)) (pressButton number)) 
-          :style {:color (if active "red" "blue")}} 
-         number)))
+    (d/div {:on-click (fn [] (set-active (not active)) (pressButton number))}
+      ($ aoa {:number number
+              :active active}))))
 
+(defstyled StyledContainerButton
+  :div 
+  {:display "flex"
+   :flex-flow "row wrap"
+   :width "380px"
+   :margin "0 auto"})
 
 (defnc NumbersButtonsPanel 
   [{:keys [set-current]}]
-  (map #(StyleNumberButton 
-          ($ NumberButton {:number (inc %1) :set-current set-current})) 
-       (take 9 (range))))
+  (StyledContainerButton 
+    (map #($ NumberButton {:number (inc %1) :set-current set-current}) 
+         (take 9 (range)))))
 
 (defnc ScreenPanel
   [{:keys [digits current]}]
   (let [asteriscs (- digits (count current))]
     (d/div
-      (d/p current)
       (d/p (str current (clojure.string/join (repeat asteriscs "*")))))))
 
 
@@ -107,7 +128,7 @@
 
 
 (defnc App []
-  (d/div
+  (StyledContainer
     ;; create elements out of components
     ($ Panel)))
 
